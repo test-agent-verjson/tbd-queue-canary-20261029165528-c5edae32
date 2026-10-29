@@ -1,0 +1,21 @@
+name: Isolated queue canary
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  merge_group:
+    types: [checks_requested]
+permissions: {}
+jobs:
+  canary-signal:
+    name: canary-signal
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Record non-secret event identifiers
+        env:
+          PROBE_EVENT: ${{ github.event_name }}
+          PROBE_SHA: ${{ github.sha }}
+          PROBE_REF: ${{ github.ref }}
+          PROBE_GROUP_HEAD: ${{ github.event.merge_group.head_sha }}
+          PROBE_GROUP_BASE: ${{ github.event.merge_group.base_sha }}
+        run: |
+          printf 'event=%s\nsha=%s\nref=%s\ngroup_head=%s\ngroup_base=%s\n' "$PROBE_EVENT" "$PROBE_SHA" "$PROBE_REF" "$PROBE_GROUP_HEAD" "$PROBE_GROUP_BASE"
