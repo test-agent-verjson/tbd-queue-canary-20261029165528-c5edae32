@@ -1,9 +1,0 @@
-name: Disable check reusable
-on:
-  workflow_call:
-permissions: {}
-jobs:
-  probe:
-    runs-on: ubuntu-24.04
-    steps:
-      - run: echo "reusable workflow executed"
