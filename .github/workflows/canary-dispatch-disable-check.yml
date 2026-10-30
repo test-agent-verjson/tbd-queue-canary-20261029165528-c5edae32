@@ -1,7 +1,0 @@
-name: Disable check dispatch
-on:
-  workflow_dispatch:
-permissions: {}
-jobs:
-  call:
-    uses: test-agent-verjson/tbd-queue-canary-20261029165528-c5edae32/.github/workflows/canary-reusable-disable-check.yml@176c9d2270be91006ed018e1cee9f4e81cd3d8b3
