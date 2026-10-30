@@ -1,0 +1,49 @@
+name: Environment admission canary
+on:
+  workflow_dispatch:
+    inputs:
+      delay:
+        type: choice
+        options: ['0', '45']
+        default: '0'
+  workflow_call:
+    inputs:
+      delay:
+        type: string
+        default: '0'
+permissions:
+  actions: read
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check main-only environment policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          REF: ${{ github.ref }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          [ "$REF" = refs/heads/main ] && [ "$DEFAULT_BRANCH" = main ]
+          gh api "repos/$REPOSITORY/environments/merge-app" | jq -e '.name == "merge-app" and .deployment_branch_policy.protected_branches == false and .deployment_branch_policy.custom_branch_policies == true' >/dev/null
+          gh api "repos/$REPOSITORY/environments/merge-app/deployment-branch-policies?per_page=100" | jq -e '.total_count == 1 and (.branch_policies | length) == 1 and .branch_policies[0].name == "main" and .branch_policies[0].type == "branch"' >/dev/null
+  guarded:
+    needs: validate
+    runs-on: ubuntu-24.04
+    environment: merge-app
+    steps:
+      - run: echo GUARDED_CANARY_STARTED
+  environment-only:
+    runs-on: ubuntu-24.04
+    environment: merge-app
+    steps:
+      - name: Observe running environment job
+        env:
+          DELAY: ${{ inputs.delay }}
+        run: |
+          set -euo pipefail
+          echo ENVIRONMENT_CANARY_STARTED
+          case "$DELAY" in 0|45) sleep "$DELAY" ;; *) exit 1 ;; esac
+          echo ENVIRONMENT_CANARY_FINISHED
