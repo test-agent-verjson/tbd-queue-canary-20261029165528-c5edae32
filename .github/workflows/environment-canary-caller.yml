@@ -1,9 +1,0 @@
-name: Pinned environment canary caller
-on:
-  workflow_dispatch:
-permissions:
-  actions: read
-  contents: read
-jobs:
-  invoke:
-    uses: test-agent-verjson/tbd-queue-canary-20261029165528-c5edae32/.github/workflows/environment-canary.yml@c82402776c00a959bc178a5460c17e8694c1c352
