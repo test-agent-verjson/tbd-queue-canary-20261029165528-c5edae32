@@ -1,0 +1,19 @@
+name: isolated-lane-evidence-canary
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evaluator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: VerJSON/.github
+          ref: 3372c91ac66168cebe1a99503175d59bc5f66975
+          persist-credentials: false
+      - name: Verify candidate and run offline contract tests
+        run: |
+          test "$(git rev-parse HEAD)" = 3372c91ac66168cebe1a99503175d59bc5f66975
+          python3 -B scripts/ci-gate/compatibility-lane-evidence.test.py
