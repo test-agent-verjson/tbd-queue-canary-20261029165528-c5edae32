@@ -41,7 +41,7 @@ jobs:
           document = yaml.safe_load(Path('.github/workflows/actions-ci.yml').read_text())
           steps = document['jobs']['hosted-compatibility-tests']['steps']
           found = [step['run'] for step in steps if step.get('name') == 'Provision trusted compatibility sandbox']
-          if len(found) != 1 or '${{' in found[0]:
+          if len(found) != 1 or ('$' + '{{') in found[0]:
               raise SystemExit('canonical provisioner is missing or not portable')
           Path(os.environ['RUNNER_TEMP'], 'provision-sandbox.sh').write_text(found[0])
           PY
