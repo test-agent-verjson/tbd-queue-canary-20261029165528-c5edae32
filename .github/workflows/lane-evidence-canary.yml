@@ -6,14 +6,25 @@ permissions:
 jobs:
   evaluator:
     runs-on: ubuntu-24.04
-    timeout-minutes: 3
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: VerJSON/.github
           ref: 3372c91ac66168cebe1a99503175d59bc5f66975
           persist-credentials: false
-      - name: Verify candidate and run offline contract tests
+      - name: Verify candidate and install pinned test dependencies
         run: |
           test "$(git rev-parse HEAD)" = 3372c91ac66168cebe1a99503175d59bc5f66975
+          python3 -c 'import sys; assert sys.version_info[:2] == (3, 12)'
+          python3 -m venv "$RUNNER_TEMP/lane-venv"
+          "$RUNNER_TEMP/lane-venv/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --require-hashes -r scripts/actions-ci-python.requirements.txt
+          echo "$RUNNER_TEMP/lane-venv/bin" >> "$GITHUB_PATH"
+      - name: Run evaluator and grouping contracts
+        run: |
           python3 -B scripts/ci-gate/compatibility-lane-evidence.test.py
+          bash scripts/actions-ci-groups.test.sh
+      - name: Run root supervisor and process receipt tests
+        run: |
+          python3 scripts/ci-gate/compatibility-sandbox-provisioning.test.py
+          python3 scripts/ci-gate/ci-entry-receipts.test.py
