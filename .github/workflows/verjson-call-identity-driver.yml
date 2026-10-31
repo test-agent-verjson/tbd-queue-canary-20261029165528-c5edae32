@@ -1,9 +1,0 @@
-name: call identity driver
-on:
-  workflow_dispatch:
-permissions: {}
-jobs:
-  first:
-    uses: ./.github/workflows/verjson-call-identity-reusable.yml
-  second:
-    uses: ./.github/workflows/verjson-call-identity-reusable.yml
