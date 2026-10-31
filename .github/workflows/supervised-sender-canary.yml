@@ -16,7 +16,8 @@ jobs:
         with:
           python-version: '3.12.14'
       - name: Install pinned test dependencies
-        run: python3 -I -m pip install --disable-pip-version-check --no-input --quiet --no-deps --only-binary=:all: --require-hashes --requirement scripts/actions-ci-python.requirements.txt
+        run: |
+          python3 -I -m pip install --disable-pip-version-check --no-input --quiet --no-deps --only-binary=:all: --require-hashes --requirement scripts/actions-ci-python.requirements.txt
       - name: Provision trusted compatibility sandbox
         env:
           ACTIONS_ID_TOKEN_REQUEST_TOKEN: ''
