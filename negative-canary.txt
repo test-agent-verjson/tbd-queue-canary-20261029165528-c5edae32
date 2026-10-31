@@ -1,0 +1,1 @@
+isolated negative merge group check
