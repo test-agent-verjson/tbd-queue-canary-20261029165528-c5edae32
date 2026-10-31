@@ -10,12 +10,11 @@ jobs:
     name: canary-signal
     runs-on: ubuntu-24.04
     steps:
-      - name: Record non-secret event identifiers
+      - name: Deliberately reject merge group
         env:
           PROBE_EVENT: ${{ github.event_name }}
           PROBE_SHA: ${{ github.sha }}
-          PROBE_REF: ${{ github.ref }}
-          PROBE_GROUP_HEAD: ${{ github.event.merge_group.head_sha }}
           PROBE_GROUP_BASE: ${{ github.event.merge_group.base_sha }}
         run: |
-          printf 'event=%s\nsha=%s\nref=%s\ngroup_head=%s\ngroup_base=%s\n' "$PROBE_EVENT" "$PROBE_SHA" "$PROBE_REF" "$PROBE_GROUP_HEAD" "$PROBE_GROUP_BASE"
+          printf 'event=%s sha=%s group_base=%s\n' "$PROBE_EVENT" "$PROBE_SHA" "$PROBE_GROUP_BASE"
+          if [ "$PROBE_EVENT" = merge_group ]; then echo "intentional negative canary failure"; exit 1; fi
