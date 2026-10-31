@@ -11,11 +11,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: VerJSON/.github
-          ref: 2fa103db58a318f34b53b795a717822579c0ed3d
+          ref: a6d6bf37f4acddac129fb4d58eb42e028d804a2b
           persist-credentials: false
       - name: Verify candidate and install pinned test dependencies
         run: |
-          test "$(git rev-parse HEAD)" = 2fa103db58a318f34b53b795a717822579c0ed3d
+          test "$(git rev-parse HEAD)" = a6d6bf37f4acddac129fb4d58eb42e028d804a2b
           python3 -c 'import sys; assert sys.version_info[:2] == (3, 12)'
           python3 -m venv "$RUNNER_TEMP/deadline-venv"
           "$RUNNER_TEMP/deadline-venv/bin/python" -m pip install --disable-pip-version-check --no-cache-dir --require-hashes -r scripts/actions-ci-python.requirements.txt
